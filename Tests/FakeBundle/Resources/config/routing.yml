@@ -42,6 +42,10 @@ FakeBundleControllerPaginatorSimple:
     pattern: /fake/paginator/simple/{field}/{dir}/{page}/{limit}
     defaults: { _controller: FakeBundle:Fake:paginatorSimple }
 
+FakeBundleControllerPaginatorMultipleWheres:
+    pattern: /fake/paginator/multiplewhere/{field}/{dir}/{page}/{limit}
+    defaults: { _controller: FakeBundle:Fake:paginatorMultipleWhere }
+
 FakeBundleControllerPaginatorNotMatching:
     pattern: /fake/paginator/notmatching/{field}/{dir}/{page}/{limit}
     defaults: { _controller: FakeBundle:Fake:paginatorNotMatching }
