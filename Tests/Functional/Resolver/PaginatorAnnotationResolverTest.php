@@ -69,6 +69,38 @@ class PaginatorAnnotationResolverTest extends AbstractWebTestCase
     }
 
     /**
+     * Test paginator simple
+     */
+    public function testPaginatorMultipleWhereAnnotation()
+    {
+        $fake = FakeFactory::create();
+        $fake->setField('test');
+        $entityManager = static::$kernel
+            ->getContainer()
+            ->get('doctrine')
+            ->getManagerForClass('Mmoreram\ControllerExtraBundle\Tests\FakeBundle\Entity\Fake');
+
+        $entityManager->persist($fake);
+        $entityManager->flush();
+
+
+        $this
+            ->client
+            ->request(
+                'GET',
+                '/fake/paginator/multiplewhere/id/2/1/5'
+            );
+
+        $this->assertEquals(
+            '{"count":1}',
+            $this
+                ->client
+                ->getResponse()
+                ->getContent()
+        );
+    }
+
+    /**
      * Test paginator not matching
      */
     public function testPaginatorNotMatchingAnnotation()
