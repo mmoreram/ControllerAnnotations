@@ -60,15 +60,20 @@ class PaginatorWheresEvaluator implements PaginatorEvaluatorInterface
 
             foreach ($annotation->getWheres() as $where) {
 
+                $annotationWhereParameter = $where[3];
+                $whereParameter = $this->clearWildcards($annotationWhereParameter);
+
                 $whereValue = $this
                     ->requestParameterProvider
-                    ->getParameterValue($where[3]);
+                    ->getParameterValue($whereParameter);
+
+                $whereValue = $this->addWildcards($annotationWhereParameter, $whereValue);
 
                 $optionalFilter = (boolean) isset($where[4])
                     ? $where[4]
                     : false;
 
-                if ($optionalFilter && ($where[3] === $whereValue)) {
+                if ($optionalFilter && ($whereParameter === $whereValue)) {
 
                     continue;
                 }
@@ -80,5 +85,41 @@ class PaginatorWheresEvaluator implements PaginatorEvaluatorInterface
         }
 
         return $this;
+    }
+
+    /**
+     * Remove wildcards from query if necessary
+     *
+     * @param string    $where  Where from annotation
+     *
+     * @return string
+     */
+    private function clearWildcards($where)
+    {
+        return trim($where, '%');
+    }
+
+    /**
+     * Add wildcards to query if necessary
+     *
+     * @param string    $annotationWhereParameter   Where from annotation
+     * @param string    $whereValue                 Where replaced with request parameters
+     *
+     * @return string
+     */
+    private function addWildcards($annotationWhereParameter, $whereValue)
+    {
+        $hasInitialPercentage = (strpos($annotationWhereParameter, '%') === 0) ? true : false;
+        $hasEndPercentage = (substr($annotationWhereParameter, -1) == '%') ? true : false;
+
+        if ($hasInitialPercentage) {
+            $whereValue = '%' . $whereValue;
+        }
+
+        if ($hasEndPercentage) {
+            $whereValue = $whereValue . '%';
+        }
+
+        return $whereValue;
     }
 }
