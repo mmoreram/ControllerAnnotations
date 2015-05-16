@@ -202,6 +202,38 @@ class PaginatorAnnotationResolverTest extends AbstractWebTestCase
     }
 
     /**
+     * Test paginator wheres with wildcard and request parameter
+     */
+    public function testPaginatorWithLikeWithGetParameterAnnotation()
+    {
+        $fake = FakeFactory::create();
+        $fake->setField('we are doing a test from paginator');
+        $entityManager = static::$kernel
+            ->getContainer()
+            ->get('doctrine')
+            ->getManagerForClass('Mmoreram\ControllerExtraBundle\Tests\FakeBundle\Entity\Fake');
+
+        $entityManager->persist($fake);
+        $entityManager->flush();
+
+
+        $this
+            ->client
+            ->request(
+                'GET',
+                '/fake/paginator/likewithgetparameter?search=test'
+            );
+
+        $this->assertEquals(
+            '{"count":1}',
+            $this
+                ->client
+                ->getResponse()
+                ->getContent()
+        );
+    }
+
+    /**
      * Test paginator with request
      */
     public function testPaginatorAnnotationRequest()
