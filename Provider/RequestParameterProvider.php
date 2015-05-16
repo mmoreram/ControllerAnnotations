@@ -152,13 +152,24 @@ class RequestParameterProvider
         $value
     )
     {
-        $trimmedValue = trim($value, $delimiter);
+        $trimmedValue = trim(trim($value, '%'), $delimiter);
 
         if (
-            ($delimiter . $trimmedValue . $delimiter === $value) &&
+            ($delimiter . $trimmedValue . $delimiter === trim($value, '%')) &&
             $parameterBag->has($trimmedValue)
         ) {
+            $hasInitialPercentage = (strpos($value, '%') === 0) ? true : false;
+            $hasEndPercentage = (substr($value, -1) == '%') ? true : false;
+
             $value = $parameterBag->get($trimmedValue);
+
+            if ($hasInitialPercentage) {
+                $value = '%' . $value;
+            }
+
+            if ($hasEndPercentage) {
+                $value = $value . '%';
+            }
         }
 
         return $value;
