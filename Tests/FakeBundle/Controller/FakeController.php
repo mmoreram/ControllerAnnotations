@@ -319,6 +319,29 @@ class FakeController extends Controller
      *          "method" = "createNonStatic",
      *          "static" = false
      *      },
+     *      wheres = {
+     *          { "x", "field" , "LIKE", "%?search?%" }
+     *      }
+     * )
+     *
+     * @\Mmoreram\ControllerExtraBundle\Annotation\JsonResponse()
+     */
+    public function PaginatorLikeWithGetParameterAction(Paginator $paginator)
+    {
+        return array(
+            'count' => $paginator->getIterator()->count()
+        );
+    }
+
+    /**
+     * Public pagination method
+     *
+     * @\Mmoreram\ControllerExtraBundle\Annotation\Paginator(
+     *      class = {
+     *          "factory" = "Mmoreram\ControllerExtraBundle\Tests\FakeBundle\Factory\FakeFactory",
+     *          "method" = "createNonStatic",
+     *          "static" = false
+     *      },
      *      page = "~page~",
      *      limit = "~limit~",
      *      orderBy = {
