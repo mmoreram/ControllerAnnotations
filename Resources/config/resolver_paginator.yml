@@ -10,6 +10,7 @@ parameters:
     mmoreram.controllerextra.evaluator.paginator_wheres_evaluator.class: Mmoreram\ControllerExtraBundle\Resolver\Paginator\PaginatorWheresEvaluator
     mmoreram.controllerextra.evaluator.paginator_orderby_evaluator.class: Mmoreram\ControllerExtraBundle\Resolver\Paginator\PaginatorOrderByEvaluator
     mmoreram.controllerextra.evaluator.paginator_notnulls_evaluator.class: Mmoreram\ControllerExtraBundle\Resolver\Paginator\PaginatorNotNullsEvaluator
+    mmoreram.controllerextra.evaluator.paginator_nulls_evaluator.class: Mmoreram\ControllerExtraBundle\Resolver\Paginator\PaginatorNullsEvaluator
 
 services:
 
@@ -64,5 +65,10 @@ services:
 
     mmoreram.controllerextra.evaluator.paginator_notnulls_evaluator:
         class: %mmoreram.controllerextra.evaluator.paginator_notnulls_evaluator.class%
+        tags:
+            - { name: controller_extra.paginator_evaluator }
+
+    mmoreram.controllerextra.evaluator.paginator_nulls_evaluator:
+        class: %mmoreram.controllerextra.evaluator.paginator_nulls_evaluator.class%
         tags:
             - { name: controller_extra.paginator_evaluator }

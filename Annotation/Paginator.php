@@ -86,6 +86,13 @@ class Paginator extends Annotation
     protected $notNulls;
 
     /**
+     * @var array
+     *
+     * Nulls
+     */
+    protected $nulls;
+
+    /**
      * @var string
      *
      * Attributes
@@ -180,6 +187,16 @@ class Paginator extends Annotation
     public function getNotNulls()
     {
         return $this->notNulls;
+    }
+
+    /**
+     * Get nulls
+     *
+     * @return array Nulls
+     */
+    public function getNulls()
+    {
+        return $this->nulls;
     }
 
     /**

@@ -59,6 +59,26 @@ class Form extends Annotation
     public $validate = false;
 
     /**
+     * @var string
+     * Name of route.
+     */
+    public $routeName;
+
+    /**
+     * @var array
+     *
+     * Route parameters.
+     */
+    public $routeParameters = array();
+
+    /**
+     * @var string
+     *
+     * HTTP method
+     */
+    public $method = 'POST';
+
+    /**
      * return name
      *
      * @return string Name
@@ -106,5 +126,35 @@ class Form extends Annotation
     public function getValidate()
     {
         return $this->validate;
+    }
+
+    /**
+     * return route name
+     *
+     * @return string Route name
+     */
+    public function getRouteName()
+    {
+        return $this->routeName;
+    }
+
+    /**
+     * return route parameters
+     *
+     * @return array Route parameters
+     */
+    public function getRouteParameters()
+    {
+        return $this->routeParameters;
+    }
+
+    /**
+     * return http method
+     *
+     * @return string HTTP method
+     */
+    public function getMethod()
+    {
+        return $this->method;
     }
 }
