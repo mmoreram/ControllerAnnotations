@@ -260,6 +260,9 @@ class FakeController extends Controller
      *      notNulls = {
      *          {"x", "address1"},
      *          {"x", "address2"},
+     *      },
+     *      nulls = {
+     *          {"x", "city"},
      *      }
      * )
      *

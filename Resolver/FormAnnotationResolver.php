@@ -13,6 +13,7 @@
 
 namespace Mmoreram\ControllerExtraBundle\Resolver;
 
+use Mmoreram\ControllerExtraBundle\ValueObject\FormRouteAttributes;
 use ReflectionMethod;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormFactoryInterface;
@@ -23,6 +24,7 @@ use Mmoreram\ControllerExtraBundle\Annotation\Abstracts\Annotation;
 use Mmoreram\ControllerExtraBundle\Annotation\Form as AnnotationForm;
 use Mmoreram\ControllerExtraBundle\Resolver\Abstracts\AbstractAnnotationResolver;
 use Mmoreram\ControllerExtraBundle\Resolver\Interfaces\AnnotationResolverInterface;
+use Symfony\Component\Routing\RouterInterface;
 
 /**
  * FormAnnotationResolver, an implementation of  AnnotationResolverInterface
@@ -44,11 +46,25 @@ class FormAnnotationResolver extends AbstractAnnotationResolver implements Annot
     protected $formFactory;
 
     /**
+     * @var RouterInterface
+     *
+     * Router
+     */
+    protected $router;
+
+    /**
      * @var string
      *
      * Default field name
      */
     protected $defaultName;
+
+    /**
+     * @var FormRouteAttributes
+     *
+     * Route attributes
+     */
+    protected $routeAttributes;
 
     /**
      * Construct method
@@ -111,6 +127,12 @@ class FormAnnotationResolver extends AbstractAnnotationResolver implements Annot
                 'Symfony\\Component\\Form\\FormInterface'
             );
 
+            $this->routeAttributes = new FormRouteAttributes();
+            $this->routeAttributes
+                ->setMethod($annotation->getMethod())
+                ->setName($annotation->getRouteName())
+                ->setParameters($annotation->getRouteParameters());
+
             /**
              * Requiring result with calling getBuiltObject(), set as request
              * attribute desired element
@@ -126,6 +148,20 @@ class FormAnnotationResolver extends AbstractAnnotationResolver implements Annot
                 )
             );
         }
+
+        return $this;
+    }
+
+    /**
+     * Set router
+     *
+     * @param RouterInterface $router Router service
+     *
+     * @return FormAnnotationResolver
+     */
+    public function setRouter($router)
+    {
+        $this->router = $router;
 
         return $this;
     }
@@ -161,7 +197,7 @@ class FormAnnotationResolver extends AbstractAnnotationResolver implements Annot
         /**
          * Creates form object from type
          */
-        $form = $formFactory->create($type, $entity);
+        $form = $formFactory->create($type, $entity, $this->getFormOptions($request));
 
         /**
          * Handling request if needed
@@ -197,5 +233,36 @@ class FormAnnotationResolver extends AbstractAnnotationResolver implements Annot
         if ('Symfony\\Component\\Form\\FormView' == $parameterClass) {
             return $form->createView();
         }
+    }
+
+    /**
+     * Built form builder options.
+     *
+     * @param Request             $request    Request
+     *
+     * @return array
+     */
+    protected function getFormOptions(Request $request) {
+        $options = array();
+        if (null !== $this->router && null !== $this->routeAttributes->getName()) {
+            $routeParameters = array();
+            foreach ($this->routeAttributes->getParameters() as $parameterName => $parameterValue) {
+                if (is_array($parameterValue)) {
+                    if (array_key_exists('entity', $parameterValue) && array_key_exists('method', $parameterValue)) {
+                        $entity = $request->attributes->get($parameterValue['entity']);
+                        $method = $parameterValue['method'];
+                        if (is_callable(array($entity, $method))) {
+                            $routeParameters[$parameterName] = $entity->$method();
+                        }
+                    }
+                } else {
+                    $routeParameters[$parameterName] = $parameterValue;
+                }
+            }
+            $options['action'] = $this->router->generate($this->routeAttributes->getName(), $routeParameters);
+        }
+        $options['method'] = $this->routeAttributes->getMethod();
+
+        return $options;
     }
 }
