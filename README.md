@@ -1832,7 +1832,7 @@ services:
     my.bundle.resolver.my_custom_annotation_resolver:
         class: %my.bundle.resolver.my_custom_annotation_resolver.class%
         tags:
-            - { name: controller_extra.annotation }
+            - { name: controller_extra.annotation_resolver }
 ```
 
 ## Registration
